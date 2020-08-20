@@ -1,0 +1,15 @@
+Once the user has logged in like iDeas we have defect and defect reports
+Defect will have further modules like 
+New Defect, Search Defect
+New Defect will have following fields
+
+Type: Defect/Issue/Enhancement
+Date: Auto updated for today
+Title:Description of defect
+Summary: Steps to replicate
+Screenshots: User can upload screenshots too
+Status: new when created
+Comments: Comment of the dev/testers
+Project : writing a project name should give the project in text box and able to click. If no found then no projects found.
+PID: Updated from the project name
+

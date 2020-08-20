@@ -1,0 +1,14 @@
+ENDPOINTS IN THE APP
+Login - To authenticate the user for a session to start -- done
+
+addDefect - takes type,date,title,status,summary,project and returns a defect id --POST -- DONE
+
+giveProjNo- takes project name as input and returns its PID if available and vice versa -- GET--DONE
+
+searchThing - it will take a full word or some characters and should return the matching results. Same endpoint will be used in getting PID,Project and an already raised defect/issue -- GET
+parameters -: collname,fname,fvalues -- DONE
+
+Main Endpoints for backend are almost ready now will work on front end.
+We will try to get inspire from iTrack like modal for raising any itrack. So pls follow that UI. Sshots are attached in the word file pls check from it.
+
+id,title,type,date,status,summary
