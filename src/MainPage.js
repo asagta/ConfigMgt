@@ -15,20 +15,29 @@ class MainPage extends React.Component {
       proj:"",
       proj_sel:"",
       ele:"",
-      opt:[],
+      opt:[],addcoms:[],
       datas:[],
       b:"",
-      pid:"",splashVisible:'none',dmsg:'',dvis:'none',
-      lin:[],defid:'',dtitle:'',dsumm:'',ddate:day+"-"+month+"-"+year,dstatus:'',dtype:''
+      pid:"",splashVisible:'none',dmsg:'',dvis:'none',mainVis:'block',comsVis:'none',
+      switchd:"none",defmod:false,dctmp:'',
+      defcoms:[],updsave:true,
+      lin:[],defid:'',dtitle:'',dsumm:'',ddate:day+"-"+month+"-"+year,dstatus:'',dtype:'',did:'',dstring:'',dfsvis:'none' 
     }
+    this.showDefectModal=this.showDefectModal.bind(this);
     this.showMsg=this.showMsg.bind(this);
+    this.openModal=this.openModal.bind(this);
     this.receiveHint=this.receiveHint.bind(this);
     this.showHints=this.showHints.bind(this);
     this.showMsg();
     this.receiveHint();
+    this.addcoms=this.addcoms.bind(this);
     this.gethint=this.gethint.bind(this);
     this.changedata=this.changedata.bind(this);
+    this.getDefect=this.getDefect.bind(this);
     this.raiseDefect=this.raiseDefect.bind(this); 
+    this.updateDefect=this.updateDefect.bind(this);
+    this.updateDefectShow=this.updateDefectShow.bind(this);
+    this.addtoarr=this.addtoarr.bind(this);
    }
   showHints()
   {
@@ -103,8 +112,18 @@ dologout()
 }
 openModal()
 {
+  this.setState({dfsvis:'none'});
  document.getElementById("myModal").style.display="block";
  console.log("IN open modal");
+ var day = new Date().getDate();
+ var month = new Date().getMonth() + 1;
+ var year = new Date().getFullYear();
+ this.setState({splashVisible:'none'});
+ this.setState({proj:''});this.setState({defid:''});
+ this.setState({dtitle:''});this.setState({ddate:day+"-"+month+"-"+year});
+ this.setState({dsumm:''});
+ this.setState({switchd:"none"});
+ this.setState({defmod:false});
 }
 closeModal()
 {
@@ -197,6 +216,16 @@ changedata(evt)
 {
   var a=this.state.lin;
   console.log(a);
+  if(evt.innerHTML == "General Info")
+  {
+  this.setState({mainVis:'block'});
+  this.setState({comsVis:'none'});
+  }
+  else
+  {
+  this.setState({mainVis:'none'});
+  this.setState({comsVis:'block'});
+  }
   try{    
   a[0].style.color='#D3D3D2';
   a[0].style.borderBottom='none';}
@@ -243,13 +272,115 @@ raiseDefect()
 }
 catch(err){alert("check your network connection/wifi");}
 }
+updateDefectShow()
+{
+   this.setState({defmod:false});
+   this.setState({updsave:false}); 
+}
+
+updateDefect()
+{
+    const requestOptions = {
+      method: 'POST',
+      headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({defid:this.state.did,dtype:this.state.dtype,dtitle:this.state.dtitle,ddate:this.state.ddate,dstatus:this.state.dstatus,dsummary:this.state.dsumm,dproject:this.state.proj,dcmnts:this.state.defcoms}),mode: 'cors',
+  };
+  this.setState({splashVisible:'block'});
+     try{
+  fetch('https://asprod-users-data.herokuapp.com/updatedefect',requestOptions)
+.then((response) => response.json())
+//If response is in json then in success
+.then((responseJson) => {
+   //Success 
+   this.setState({splashVisible:'none'});
+   document.getElementById("myModal").style.display="none";
+   console.log(responseJson); 
+   var msg="Item "+this.state.defid+"-: "+this.state.dtitle+" forwarded to concerned team.";
+   this.setState({dmsg:msg});this.setState({dvis:'block'});
+})
+//If response is not in json then in error
+.catch((error) => {
+   //Error 
+   console.error(error);
+});  
+}
+catch(err){alert("check your network connection/wifi");}
+}
+getDefect()
+{
+ console.log("I here");
+ this.setState({splashVisible:'block'});
+ this.setState({dfsvis:'none'});
+ try{ 
+  fetch('https://asprod-users-data.herokuapp.com/givedefect?coll=defects&fname=defid&fvalue='+this.state.did, {
+   method: 'GET'
+   //Request Type 
+})
+.then((response) => response.json())
+//If response is in json then in success
+.then((responseJson) => {
+   //Success
+   if(responseJson.defid=="No Data Found")
+   {
+    console.log(responseJson); 
+    this.setState({splashVisible:'none'});
+   }
+   else
+   { 
+   this.setState({splashVisible:'none'});
+   this.setState({dfsvis:'block'});
+   this.setState({proj:responseJson.dproject});this.setState({defid:responseJson.defid});
+   this.setState({dtitle:responseJson.dtitle});this.setState({ddate:responseJson.ddate});
+   this.setState({dtype:responseJson.dtype});this.setState({dstatus:responseJson.dstatus});
+   this.setState({dsumm:responseJson.dsummary});
+   this.setState({switchd:"block"});
+   this.setState({defmod:true});
+   console.log(responseJson);
+   //console.log("COMS::"+responseJson.dcmnts[0].user+" , "+responseJson.dcmnts[0].date+" , "+responseJson.dcmnts[0].coms);
+   this.setState({dstring:this.state.did+" :-> "+responseJson.dtitle});
+   console.log("COMS::"+responseJson.dcmnts);
+   this.setState({defcoms:responseJson.dcmnts});
+   }  
+})
+//If response is not in json then in error
+.catch((error) => {
+   //Error 
+   //alert("Error caught");
+   console.error(error);
+});  
+}
+catch(err){alert("check your network connection/wifi");}  
+}
+showDefectModal()
+{
+ this.setState({dfsvis:'none'});
+ document.getElementById("myModal").style.display="block";
+ console.log(this.state.defmod);
+}
+addcoms()
+{
+  let addcoms=this.state.addcoms;
+  addcoms.push(<div style={{marginLeft:'25px',marginTop:'10px',resize:'none',overflow:'auto',border: '2px solid #C2C5C5'}}><textarea wrap='on' onChange={(evt) => this.setState({dctmp:evt.target.value})} rows='7' cols='90' style={{resize:'none',overflow:'auto',border: '1px solid #C2C5C5',fontSize:'13px'}}>{this.state.dctmp}</textarea><button className='okbutt' style={{marginLeft:'80%'}} onClick={this.addtoarr}>Post</button><button className='cancelbutt'>Cancel</button></div>);
+  this.setState({addcoms});
+}
+addtoarr()
+{
+    let defcoms=this.state.defcoms;
+    defcoms.push({user:this.state.email,date:this.state.ddate,coms:this.state.dctmp});
+    this.setState({defcoms});
+}
 render()
   {
   return (
 <div className="bg-main">
+<Splash vis={this.state.splashVisible}></Splash>
   <div className="hidit" style={{display:this.state.dvis}}>
     {this.state.dmsg}
   </div>
+
 <div id="myModal" className="modal">
 <Splash vis={this.state.splashVisible}></Splash>
    <div className="modal-content">
@@ -257,7 +388,7 @@ render()
     <div className="proj">
       <div className="names">Project</div>
       <input value={this.state.proj} onChange={(evt) => this.setState({proj:evt.target.value})}
-       onKeyUp={this.showHints} type="text"></input>   
+       onKeyUp={this.showHints} type="text" disabled={this.state.defmod}></input>   
     </div>
     <div className="projsearch" id="livesearch">{this.state.datas.map((value) => {
              return value })}       
@@ -272,14 +403,15 @@ render()
     <li className="infos" onClick={(evt)=>this.changedata(evt.target)}>History</li>
     <li className="infos" onClick={(evt)=>this.changedata(evt.target)}>Comments</li>    
    </div>
-   <div style={{marginLeft:'4vh'}}>
+
+   <div style={{marginLeft:'4vh',display:this.state.mainVis}}>
    <div className="proj">
       <div className="names">ID</div>
       <input style={{zIndex:1}} value={this.state.defid} disabled></input>
     </div>
     <div className="proj">
       <div className="names">Title</div>
-      <input value={this.state.dtitle} style={{width:'65%'}} onChange={(evt) => this.setState({dtitle:evt.target.value})}></input>
+      <input value={this.state.dtitle} style={{width:'65%'}} onChange={(evt) => this.setState({dtitle:evt.target.value})} disabled={this.state.defmod}></input>
     </div>
     <div className="proj">
       <div className="names">Type</div>
@@ -294,8 +426,8 @@ render()
     </div>
     <div className="proj">
       <div className="names">Status</div>
-      <select className='cselect'>
-        <option value='open' selected>Open</option>
+      <select className='cselect' value={this.state.dstatus} onChange={(evt) => this.setState({dstatus:evt.target.value})}>
+        <option value='open'>Open</option>
         <option value='retest'>Retest</option>
         <option value='rf'>Retest Failed</option>
         <option value='closed'>Closed</option>
@@ -303,14 +435,38 @@ render()
     </div>
     <div className="proj">
       <div className="names" >Summary</div>
-      <textarea wrap='on' value={this.state.dsumm} onChange={(evt) => this.setState({dsumm:evt.target.value})} rows='10' cols='80' style={{marginLeft:'45px',resize:'none',overflow:'auto',border: '1px solid #888' }} ></textarea>
+      <textarea wrap='on' disabled={this.state.defmod} value={this.state.dsumm} onChange={(evt) => this.setState({dsumm:evt.target.value})} rows='10' cols='80' style={{marginLeft:'45px',resize:'none',overflow:'auto',border: '1px solid #888' }} ></textarea>
     </div>
-    <button style={{marginLeft:'50%',marginTop:'20%'}} onClick={this.raiseDefect}>Raise</button>
+    <button style={{marginLeft:'50%',marginTop:'20%'}} disabled={this.state.defmod} onClick={this.raiseDefect}>Raise</button>
+    <button style={{display:this.state.switchd,marginLeft:'50%'}} onClick={this.updateDefectShow}>Update</button>
+    <button className='okbutt' disabled={this.state.updsave} onClick={this.updateDefect}>Save</button>
+   </div>
+
+  <div style={{marginLeft:'4vh',display:this.state.comsVis}}>
+  {this.state.defcoms.map((value) => {
+  return (<div style={{border:'1px solid blue'}}> 
+  <div style={{fontWeight:'bold',color:'blue',}}><a>{value.user}</a> <span style={{marginLeft:'20%',fontSize:'10px',color:'black'}}>{value.date}</span></div>
+  <div>
+  {value.coms}
+  </div>
+  <br></br>
+  </div>); 
+  })} 
+<div>{this.state.addcoms.map((value) => {
+             return value })}       
+</div>
+  <button onClick={this.addcoms} autofocus='false' className='modbut'>Comment</button>
+  </div>
+
    </div>
    </div>
-   </div>
+
    <header>{this.state.email}</header>
    <button onClick={this.dologout}>Logout</button>
+   <input value={this.state.did} onChange={(evt) => this.setState({did:evt.target.value})} className='searchbar' placeholder='Defect Id' onKeyUp={this.getDefect} type='text'></input>
+   <div className="defsearch" style={{display:this.state.dfsvis}} onClick={this.showDefectModal}>
+       {this.state.dstring}
+       </div>
    <div className="newbox" id="mod" onClick={this.openModal}><center><b>Defect</b></center></div>      
 </div>
   );

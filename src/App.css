@@ -163,6 +163,30 @@
     font-size: 12;
     color:whitesmoke;
 }
+.defsearch{
+  display: none;
+  z-index: 10;
+  opacity: 100%;
+  word-wrap: normal;
+  background-color: yellowgreen;
+  min-width: 35vh;
+  min-height: 5vh;
+  overflow: auto;
+  position: relative;
+  float: right;
+  margin-left:80%;
+  margin-top:1.5%;
+  max-height: 80vh;
+  max-width: 50vh;
+  font-size: 12;
+  color:whitesmoke;
+}
+.defsearch:hover
+{
+  cursor: pointer;
+  background-color:#61dafb;
+  color: #000;
+}
 .hintlist{
   list-style: none;
 }
@@ -201,6 +225,53 @@
  background-repeat: no-repeat;
  background-position: right;
  background-size: 30px 30px;  
+}
+.searchbar
+{
+ margin-left: 80%;
+ float:right; 
+ width: 25vh;
+ height: 5vh;
+ padding-left: 10px;
+ border-radius: 15px;
+ color: yellow;
+ background:url('./static/images/search.png');
+ background-repeat: no-repeat;
+ background-position: right;
+ background-size: 30px 30px;  
+}
+.modbut
+{
+  position: fixed;
+  margin-top: 2%;
+  margin-left: 0%; 
+  width: 20vh;
+  height: 5vh;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 20px;
+  padding-left: 10px;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  box-shadow: darkkhaki;
+ background:url('./static/images/comment.png');
+ background-repeat: no-repeat;
+ background-position: left;
+ background-size: 30px 30px;
+}
+.okbutt{
+  border-radius: 8px;
+  background-color: darkslateblue;
+  color: lavender;
+}
+.cancelbutt{
+  border-radius: 8px;
+  background-color: DCDEDE;
+  border:'0.5px solid #7D7D7D';
+  color: black;
+}
+::placeholder {
+  color:#FFFC98;
+  opacity: 1; /* Firefox */
 }
 @keyframes spin {
   0% { transform: rotate(0deg); }
