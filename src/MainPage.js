@@ -38,6 +38,9 @@ class MainPage extends React.Component {
     this.updateDefect=this.updateDefect.bind(this);
     this.updateDefectShow=this.updateDefectShow.bind(this);
     this.addtoarr=this.addtoarr.bind(this);
+    let defcoms=this.state.defcoms;
+    defcoms.push({user:'',date:'',coms:''});
+    this.setState({defcoms});
    }
   showHints()
   {
@@ -248,7 +251,7 @@ raiseDefect()
           'Accept': 'application/json', 
           'Content-Type': 'application/json'
       },
-      body: JSON.stringify({dtype:'Defect',dtitle:this.state.dtitle,ddate:this.state.ddate,dstatus:'Open',dsummary:this.state.dsumm,dproject:this.state.proj}),mode: 'cors',
+      body: JSON.stringify({dtype:'Defect',dtitle:this.state.dtitle,ddate:this.state.ddate,dstatus:'Open',dsummary:this.state.dsumm,dproject:this.state.proj,dcmnts:[]}),mode: 'cors',
   };
   this.setState({splashVisible:'block'});
      try{
@@ -341,8 +344,14 @@ getDefect()
    console.log(responseJson);
    //console.log("COMS::"+responseJson.dcmnts[0].user+" , "+responseJson.dcmnts[0].date+" , "+responseJson.dcmnts[0].coms);
    this.setState({dstring:this.state.did+" :-> "+responseJson.dtitle});
-   console.log("COMS::"+responseJson.dcmnts);
-   this.setState({defcoms:responseJson.dcmnts});
+   //console.log("COMS::"+responseJson.dcmnts);
+   try{this.setState({defcoms:responseJson.dcmnts});}
+   catch(err){
+    console.log("ERR caught ubunut"); 
+    let defcoms=this.state.defcoms;
+    defcoms.push({user:'',date:'',coms:''});
+    this.setState({defcoms});
+   }
    }  
 })
 //If response is not in json then in error
